@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="nav_rating">Rating</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --gold: #fbbf24;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            color: var(--text);
+            transition: 0.3s;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 5%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { color: var(--muted); }
+
+        /* ТАБЛИЦА РЕЙТИНГА */
+        .rating-list {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .rating-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--glass-border);
+            transition: 0.2s;
+        }
+        .rating-item:last-child { border-bottom: none; }
+        .rating-item:hover { background: rgba(255,255,255,0.02); }
+
+        .rank {
+            font-size: 1.2rem;
+            font-weight: 800;
+            width: 40px;
+            color: var(--muted);
+        }
+        .rank-1 { color: var(--gold); font-size: 1.5rem; }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 2px solid var(--glass-border);
+        }
+
+        .info { flex: 1; }
+        .info .name { display: block; font-weight: 700; font-size: 1.1rem; }
+        .info .region { font-size: 0.85rem; color: var(--muted); }
+
+        .score {
+            text-align: right;
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            min-width: 60px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        footer { text-align: center; padding: 40px; color: var(--muted); font-size: 0.8rem; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="/tasks/" style="color:var(--text); text-decoration:none; margin-right:20px;" data-t="nav_tasks">Tasks</a>
+        <a href="/profile/" style="color:var(--text); text-decoration:none;" data-t="nav_profile">Profile</a>
+    </div>
+    <div class="controls">
+        <button style="cursor:pointer; background:none; border:none; color:var(--text);" onclick="toggleLang()" id="langBtn">EN</button>
+        <button style="cursor:pointer; background:none; border:none; margin-left:10px;" onclick="toggleTheme()">🌓</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="header">
+        <h1 data-t="title">Top Volunteers</h1>
+        <p data-t="subtitle">Our heroes who make the world better</p>
+    </div>
+
+    <div class="rating-list">
+        {% for profile in volunteers %}
+        <div class="rating-item">
+            <div class="rank {% if forloop.counter == 1 %}rank-1{% endif %}">
+                #{{ forloop.counter }}
+            </div>
+            
+            {% if profile.image %}
+                <img src="{{ profile.image.url }}" class="avatar">
+            {% else %}
+                <div class="avatar" style="background: var(--glass); display: flex; align-items: center; justify-content: center;">👤</div>
+            {% endif %}
+
+            <div class="info">
+                <span class="name">{{ profile.full_name|default:profile.user.username }}</span>
+                <span class="region">{{ profile.user.region|default:"---" }}</span>
+            </div>
+
+            <div class="score">
+                {{ profile.rating }} <span style="font-size: 0.7rem; font-weight: 400;" data-t="pts">pts</span>
+            </div>
+        </div>
+        {% empty %}
+        <div style="padding: 40px; text-align: center; color: var(--muted);" data-t="empty">No volunteers yet</div>
+        {% endfor %}
+    </div>
+</div>
+
+<footer>Connected by Care &copy; 2026</footer>
+
+<script>
+const translations = {
+    en: {
+        nav_tasks: "Tasks", nav_profile: "Profile", nav_rating: "Rating",
+        title: "Top Volunteers", subtitle: "Our heroes who make the world better",
+        pts: "pts", empty: "No volunteers found"
+    },
+    ru: {
+        nav_tasks: "Задачи", nav_profile: "Профиль", nav_rating: "Рейтинг",
+        title: "Лучшие Волонтеры", subtitle: "Наши герои, делающие мир лучше",
+        pts: "балл.", empty: "Волонтеры не найдены"
+    },
+    tj: {
+        nav_tasks: "Супоришҳо", nav_profile: "Профил", nav_rating: "Рейтинг",
+        title: "Волонтёрони беҳтарин", subtitle: "Қаҳрамонони мо, ки дунёро обод мекунанд",
+        pts: "хол", empty: "Волонтёрҳо ёфт нашуданд"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") === "en" ? "ru" : localStorage.getItem("lang") === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", lang);
+    updateLang(lang);
+}
+
+function toggleTheme(){
+    const body = document.body;
+    let theme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    body.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "en");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+});
+</script>
+</body>
+</html>

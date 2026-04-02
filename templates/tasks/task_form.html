@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="title">Task Form</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            color: var(--text);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        h2 { margin-top: 0; font-weight: 700; text-align: center; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--muted); }
+
+        /* Стилизация полей Django form или обычных input */
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0,0,0,0.1);
+            color: var(--text);
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-save:hover { opacity: 0.9; transform: scale(1.01); }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-back:hover { color: var(--text); }
+
+        footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="/tasks/" style="color:var(--text); text-decoration:none; font-weight:600;">← <span data-t="back">Back</span></a>
+    </div>
+    <div class="controls">
+        <button style="cursor:pointer; background:none; border:none; color:var(--text);" onclick="toggleLang()" id="langBtn">EN</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h2 data-t="form_title">{% if object %}Edit Task{% else %}New Task{% endif %}</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label data-t="label_title">Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group">
+                <label data-t="label_desc">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                <label data-t="label_deadline">Deadline</label>
+                {{ form.deadline }}
+            </div>
+
+            {% if form.is_completed %}
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                {{ form.is_completed }}
+                <label data-t="label_done" style="margin:0;">Task Completed</label>
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-save" data-t="btn_save">Save Task</button>
+        </form>
+
+        <a href="{% url 'task_list' %}" class="btn-back" data-t="cancel">Cancel</a>
+    </div>
+</div>
+
+<footer>Connected by Care &copy; 2026</footer>
+
+<script>
+const translations = {
+    en: {
+        title: "Task Management", back: "Back", form_title: "Task Details",
+        label_title: "Task Title", label_desc: "Description", label_deadline: "Deadline",
+        label_done: "Completed", btn_save: "Save Task", cancel: "Cancel"
+    },
+    ru: {
+        title: "Управление задачами", back: "Назад", form_title: "Детали задачи",
+        label_title: "Название задачи", label_desc: "Описание", label_deadline: "Срок выполнения",
+        label_done: "Выполнено", btn_save: "Сохранить", cancel: "Отмена"
+    },
+    tj: {
+        title: "Идоракунии супоришҳо", back: "Оқиб", form_title: "Тафсилоти супориш",
+        label_title: "Номи супориш", label_desc: "Тавсиф", label_deadline: "Мӯҳлат",
+        label_done: "Иҷро шуд", btn_save: "Сабт кардан", cancel: "Бекор кардан"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") === "en" ? "ru" : localStorage.getItem("lang") === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", lang);
+    updateLang(lang);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "en");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+});
+</script>
+</body>
+</html>

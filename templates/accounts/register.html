@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 data-t="hero-reg-title" class="title">
+    Create Account
+</h2>
+
+<p data-t="hero-reg-subtitle" class="subtitle">
+    Join our premium community today
+</p>
+
+<form method="POST" action="{% url 'register' %}" class="form">
+    {% csrf_token %}
+
+    <!-- DEBUG (можешь убрать потом) -->
+    {{ form.errors }}
+
+    <!-- USERNAME -->
+    <div class="form-group">
+        <label data-t="label-user">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <span class="error">{{ form.username.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- EMAIL -->
+    <div class="form-group">
+        <label data-t="label-email">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <span class="error">{{ form.email.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- ROLE (FIXED) -->
+    <div class="form-group">
+        <label>I am:</label>
+
+        <!-- СКРЫТЫЕ ПОЛЯ ДЛЯ DJANGO (ДОБАВЛЕНО) -->
+        <input type="checkbox" name="is_volunteer" id="id_is_volunteer" style="display:none;">
+        <input type="checkbox" name="is_client" id="id_is_client" style="display:none;">
+
+        <div class="role-box">
+            <label class="role-item" data-role="volunteer">
+                <input type="radio" name="role" value="volunteer">
+                <span>🤝 Volunteer</span>
+            </label>
+
+            <label class="role-item" data-role="client">
+                <span>❤️ Client</span>
+            </label>
+        </div>
+
+        {% if form.non_field_errors %}
+            <span class="error">{{ form.non_field_errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- REGION -->
+    <div class="form-group">
+        <label>Your Region</label>
+        {{ form.region }}
+        {% if form.region.errors %}
+            <span class="error">{{ form.region.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="form-group">
+        <label data-t="label-pass">Password</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+            <span class="error">{{ form.password.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <!-- CONFIRM PASSWORD (ДОБАВЛЕНО) -->
+    <div class="form-group">
+        <label>Confirm Password</label>
+        {{ form.confirm_password }}
+        {% if form.confirm_password.errors %}
+            <span class="error">{{ form.confirm_password.errors.0 }}</span>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn-submit" data-t="btn-reg-submit">
+        CREATE ACCOUNT
+    </button>
+</form>
+
+<div class="bottom-link">
+    <span data-t="footer-login">Already have an account? </span>
+    <a href="{% url 'login' %}">Login</a>
+</div>
+
+<style>
+/* ТВОЙ ОРИГИНАЛЬНЫЙ СТИЛЬ БЕЗ ИЗМЕНЕНИЙ */
+.title {
+    font-weight: 800;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.7;
+}
+
+input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px;
+    color: var(--text-main);
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px var(--primary-glow);
+    background: rgba(255,255,255,0.1) !important;
+}
+
+.error {
+    color: var(--accent);
+    font-size: 0.75rem;
+}
+
+/* ROLE UI */
+.role-box {
+    display: flex;
+    gap: 10px;
+}
+
+.role-item {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.role-item:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--primary);
+}
+
+/* скрываем стандартный radio */
+.role-item input {
+    display: none;
+}
+
+/* активный выбор */
+.role-item.active {
+    border-color: var(--primary);
+    background: rgba(99,102,241,0.2);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* BUTTON */
+.btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary), #818cf8);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 10px 20px var(--primary-glow);
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.bottom-link {
+    margin-top: 25px;
+    border-top: 1px solid var(--glass-border);
+    padding-top: 20px;
+    color: var(--text-muted);
+}
+
+.bottom-link a {
+    color: var(--primary);
+    font-weight: 700;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ===== TRANSLATIONS =====
+    const u = document.querySelector('input[name="username"]');
+    const e = document.querySelector('input[name="email"]');
+    const reg = document.querySelector('input[name="region"]');
+    const p = document.querySelector('input[name="password"]');
+    const cp = document.querySelector('input[name="confirm_password"]'); // ДОБАВЛЕНО
+
+    if(u) u.setAttribute('data-t', 'ph-user');
+    if(e) e.setAttribute('data-t', 'ph-email');
+    if(reg) reg.setAttribute('data-t', 'ph-loc');
+    if(p) p.setAttribute('data-t', 'ph-pass');
+    if(cp) cp.setAttribute('placeholder', 'Repeat your password'); // ДОБАВЛЕНО
+
+    if (window.updateLanguageUI) {
+        window.updateLanguageUI(localStorage.getItem('pref-lang') || 'en');
+    }
+
+    // ===== ROLE UI (ACTIVE STATE) =====
+    const roleItems = document.querySelectorAll('.role-item');
+    const volInput = document.getElementById('id_is_volunteer'); // ДОБАВЛЕНО
+    const cliInput = document.getElementById('id_is_client');    // ДОБАВЛЕНО
+
+    roleItems.forEach(item => {
+        item.addEventListener('click', () => {
+            roleItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            // ТВОЯ ЛОГИКА + ПРИВЯЗКА К DJANGO
+            const roleName = item.getAttribute('data-role');
+            if (roleName === 'volunteer') {
+                volInput.checked = true;
+                cliInput.checked = false;
+            } else {
+                volInput.checked = false;
+                cliInput.checked = true;
+            }
+        });
+    });
+
+});
+</script>
+
+{% endblock %}

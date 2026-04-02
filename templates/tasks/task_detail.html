@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="nav_tasks">Task Details</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
+            color: var(--text);
+            transition: 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 5%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .detail-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .status-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .status-active { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .status-done { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        h1 { margin: 0 0 15px 0; font-size: 2rem; font-weight: 800; }
+        .description { font-size: 1.1rem; line-height: 1.6; color: var(--muted); margin-bottom: 30px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 20px;
+        }
+
+        .info-item label { display: block; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+        .info-item span { font-weight: 600; font-size: 1rem; }
+
+        .actions { display: flex; gap: 15px; flex-wrap: wrap; }
+        .btn {
+            padding: 12px 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+            cursor: pointer;
+            border: none;
+            text-align: center;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.8rem; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar">
+    <a href="{% url 'task_list' %}" style="color:var(--text); text-decoration:none;">← <span data-t="back">Back</span></a>
+    <div class="controls">
+        <button style="cursor:pointer; background:none; border:none; color:var(--text);" onclick="toggleLang()" id="langBtn">EN</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="detail-card">
+        {% if task.is_completed %}
+            <div class="status-tag status-done" data-t="status_done">Completed</div>
+        {% else %}
+            <div class="status-tag status-active" data-t="status_active">Active</div>
+        {% endif %}
+
+        <h1>{{ task.title }}</h1>
+        <p class="description">{{ task.description|default:"---" }}</p>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <label data-t="label_client">Client</label>
+                <span>{{ task.client.username }}</span>
+            </div>
+            <div class="info-item">
+                <label data-t="label_vol">Volunteer</label>
+                <span>{{ task.volunteer.username|default:"---" }}</span>
+            </div>
+            <div class="info-item">
+                <label data-t="label_created">Created</label>
+                <span>{{ task.created_at|date:"d.m.Y" }}</span>
+            </div>
+            <div class="info-item">
+                <label data-t="label_deadline">Deadline</label>
+                <span>{{ task.deadline|date:"d.m.Y"|default:"---" }}</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            {% if user.role == 'volunteer' and not task.volunteer and not task.is_completed %}
+                <a href="{% url 'accept_task' task.id %}" class="btn btn-primary" data-t="btn_help">Help Now</a>
+            {% endif %}
+
+            {% if user.role == 'volunteer' and task.volunteer == user and not task.is_completed %}
+                <a href="{% url 'complete_task' task.id %}" class="btn btn-primary" style="background:#10b981;" data-t="btn_done">Complete Task</a>
+            {% endif %}
+
+            {% if user.role == 'superadmin' or user == task.client %}
+                <a href="{% url 'task_edit' task.id %}" class="btn btn-outline" data-t="btn_edit">Edit</a>
+                {% if user.role == 'superadmin' %}
+                    <a href="{% url 'task_delete' task.id %}" class="btn btn-danger" data-t="btn_delete">Delete</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<footer>Connected by Care &copy; 2026</footer>
+
+<script>
+const translations = {
+    en: {
+        back: "Back to List", status_active: "Active Task", status_done: "Completed",
+        label_client: "Client", label_vol: "Volunteer", label_created: "Created At", label_deadline: "Deadline",
+        btn_help: "Accept Task", btn_done: "Mark as Done", btn_edit: "Edit Details", btn_delete: "Delete Task"
+    },
+    ru: {
+        back: "Назад к списку", status_active: "Активная задача", status_done: "Завершено",
+        label_client: "Клиент", label_vol: "Волонтер", label_created: "Создано", label_deadline: "Срок",
+        btn_help: "Помочь", btn_done: "Выполнено", btn_edit: "Редактировать", btn_delete: "Удалить"
+    },
+    tj: {
+        back: "Ба рӯйхат", status_active: "Супориши фаъол", status_done: "Иҷро шуд",
+        label_client: "Мизоҷ", label_vol: "Волонтёр", label_created: "Санаи эҷод", label_deadline: "Мӯҳлат",
+        btn_help: "Ёрӣ додан", btn_done: "Иҷро шуд", btn_edit: "Таҳрир", btn_delete: "Нест кардан"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") === "en" ? "ru" : localStorage.getItem("lang") === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", lang);
+    updateLang(lang);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "en");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+});
+</script>
+</body>
+</html>

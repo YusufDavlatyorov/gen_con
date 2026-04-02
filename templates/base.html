@@ -1,0 +1,302 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected by Care | Premium System</title>
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+    <div class="bg-glow"></div>
+    <div class="video-bg-container">
+        <video autoplay muted loop playsinline class="video-bg">
+            <source src="{% static 'videos/PixVerse_V6_Image_Text_360P_12second_seamless_.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    
+
+    <nav class="navbar">
+    <a href="{% url 'home' %}" class="cbc-neon-brand" style="text-decoration: none; display: flex; align-items: center; gap: 15px;">
+        <div class="logo-container-v6" style="width: 55px; height: 55px; position: relative; display: flex; align-items: center; justify-content: center;">
+            <div class="logo-aura-glow"></div>
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; overflow: visible;">
+                <path d="M78 22C70 14 59 10 48 10C26 10 8 28 8 50C8 72 26 90 48 90C59 90 70 86 78 78" 
+                      stroke="url(#neon-grad)" 
+                      stroke-width="14" 
+                      stroke-linecap="round" 
+                      class="path-c" />
+                <path d="M48 30V70C48 70 56.5 70 61.5 65C66.5 60 67.5 53 61.5 50C55.5 47 62 43 65.5 38.5C69 34 66.5 30 58.5 30H48Z" 
+                      stroke="var(--text-main)" 
+                      stroke-width="7" 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round"
+                      class="path-b" />
+                <defs>
+                    <linearGradient id="neon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="var(--primary)" />
+                        <stop offset="100%" stop-color="#00e5ff" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="brand-text-v6" style="display: flex; flex-direction: column; line-height: 1;">
+            <span class="text-cbc" style="font-weight: 900; font-size: 1.8rem; color: var(--text-main); letter-spacing: -1.5px;">
+                CBC<span style="color: var(--primary);">.</span>
+            </span>
+            <span class="text-full" style="font-weight: 700; font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; margin-top: 4px;">
+                Connected by Care
+            </span>
+        </div>
+    </a>
+    
+    <ul class="nav-links">
+    
+</ul>
+
+
+
+    <div class="nav-controls">
+        <button class="icon-btn" onclick="toggleLang()" title="Change Language">
+            <span id="langTxt" style="font-weight: 800; font-size: 0.8rem;">EN</span>
+        </button>
+
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn">
+            <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
+</nav>
+
+    <main class="main-wrapper">
+        <div class="premium-card">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <span data-t="footer-text">&copy; 2026 Connected by Care. Designed for Excellence.</span>
+    </footer>
+
+    <script>
+       const translations = {
+    'en': {
+        // Navigation & General
+        'nav-home': 'Home',
+        'nav-req': 'Requests',
+        'nav-about': 'About',
+        'footer-text': 'Designed for Excellence',
+        
+        // Login Page
+        'hero-title': 'Welcome Back',
+        'hero-subtitle': 'Please enter your details to sign in',
+        'label-user': 'Username',
+        'label-pass': 'Password',
+        'ph-user': 'Enter your username',
+        'ph-pass': 'Enter your password',
+        'btn-login': 'SIGN IN',
+        'link-forgot': 'Forgot?',
+        'footer-signup': 'New here? ',
+        'btn-reg': 'Create Account',
+
+        // Register Page
+        'hero-reg-title': 'Create Account',
+        'hero-reg-subtitle': 'Join our premium community today',
+        'label-email': 'Email Address',
+        'label-pass-conf': 'Confirm Password',
+        'ph-email': 'Enter your email',
+        'ph-pass-conf': 'Repeat your password',
+        'btn-reg-submit': 'CREATE ACCOUNT',
+        'footer-login': 'Already have an account? ',
+        'btn-login-link': 'Sign In',
+
+        // Forgot Password Page (NEW)
+        'hero-title-reset': 'Reset Password',
+        'hero-subtitle-reset': "Enter your email and we'll send you a secure link",
+        'btn-reset-send': 'Send Reset Link',
+
+        // Reset Confirm Page (NEW)
+        'hero-title-secure': 'Secure Reset',
+        'hero-subtitle-secure': 'Create a strong password to protect your account',
+        'label-new-pass': 'New Password',
+        'btn-update-pass': 'Update Password',
+
+        // Email Confirmed Page (NEW)
+        'hero-title-verified': 'Email Verified',
+        'hero-subtitle-verified': 'Your account is now fully activated',
+        'btn-dashboard': 'Go to Dashboard'
+    },
+    'ru': {
+        // Навигация и общие
+        'nav-home': 'Главная',
+        'nav-req': 'Заявки',
+        'nav-about': 'О нас',
+        'footer-text': 'Разработано для совершенства',
+        
+        // Login Page
+        'hero-title': 'С возвращением',
+        'hero-subtitle': 'Введите данные для входа',
+        'label-user': 'Логин',
+        'label-pass': 'Пароль',
+        'ph-user': 'Введите логин',
+        'ph-pass': 'Введите пароль',
+        'btn-login': 'ВОЙТИ',
+        'link-forgot': 'Забыли?',
+        'footer-signup': 'Впервые здесь? ',
+        'btn-reg': 'Создать аккаунт',
+
+        // Register Page
+        'hero-reg-title': 'Регистрация',
+        'hero-reg-subtitle': 'Присоединяйтесь к нашему сообществу',
+        'label-email': 'Электронная почта',
+        'label-pass-conf': 'Подтверждение пароля',
+        'ph-email': 'Введите email',
+        'ph-pass-conf': 'Повторите пароль',
+        'btn-reg-submit': 'СОЗДАТЬ АККАУНТ',
+        'footer-login': 'Уже есть аккаунт? ',
+        'btn-login-link': 'Войти',
+
+        // Forgot Password Page (NEW)
+        'hero-title-reset': 'Сброс пароля',
+        'hero-subtitle-reset': 'Введите email для получения ссылки восстановления',
+        'btn-reset-send': 'Отправить ссылку',
+
+        // Reset Confirm Page (NEW)
+        'hero-title-secure': 'Безопасный сброс',
+        'hero-subtitle-secure': 'Придумайте сложный пароль для защиты аккаунта',
+        'label-new-pass': 'Новый пароль',
+        'btn-update-pass': 'Обновить пароль',
+
+        // Email Confirmed Page (NEW)
+        'hero-title-verified': 'Почта подтверждена',
+        'hero-subtitle-verified': 'Ваш аккаунт полностью активирован',
+        'btn-dashboard': 'В личный кабинет'
+    },
+    'tj': {
+        // Навигация и общие
+        'nav-home': 'Асосӣ',
+        'nav-req': 'Дархостҳо',
+        'nav-about': 'Дар бораи мо',
+        'footer-text': 'Барои камолот сохта шудааст',
+        
+        // Login Page
+        'hero-title': 'Хуш омадед',
+        'hero-subtitle': 'Барои ворид шудан маълумотро ворид кунед',
+        'label-user': 'Номи корбар',
+        'label-pass': 'Парол',
+        'ph-user': 'Номи корбарро нависед',
+        'ph-pass': 'Паролро ворид кунед',
+        'btn-login': 'ВОРИД ШУДАН',
+        'link-forgot': 'Фаромӯш кардед?',
+        'footer-signup': 'Дар сайт нав ҳастед? ',
+        'btn-reg': 'Ҳисоб созед',
+
+        // Register Page
+        'hero-reg-title': 'Бақайдгирӣ',
+        'hero-reg-subtitle': 'Ба ҷомеаи мо ҳамроҳ шавед',
+        'label-email': 'Почтаи электронӣ',
+        'label-pass-conf': 'Тасдиқи парол',
+        'ph-email': 'Почтаро ворид кунед',
+        'ph-pass-conf': 'Паролро такрор кунед',
+        'btn-reg-submit': 'ҲИСОБ СОЗЕД',
+        'footer-login': 'Ҳисоб доред? ',
+        'btn-login-link': 'Ворид шавед',
+
+        // Forgot Password Page (NEW)
+        'hero-title-reset': 'Ивази парол',
+        'hero-subtitle-reset': 'Почтаи худро ворид кунед, мо ба шумо пайванд мефиристем',
+        'btn-reset-send': 'Фиристодани пайванд',
+
+        // Reset Confirm Page (NEW)
+        'hero-title-secure': 'Ивази бехатар',
+        'hero-subtitle-secure': 'Барои ҳифзи ҳисоби худ пароли қавӣ созед',
+        'label-new-pass': 'Пароли нав',
+        'btn-update-pass': 'Навсозии парол',
+
+        // Email Confirmed Page (NEW)
+        'hero-title-verified': 'Почта тасдиқ шуд',
+        'hero-subtitle-verified': 'Ҳисоби шумо ҳоло комилан фаъол аст',
+        'btn-dashboard': 'Ба саҳифаи асосӣ'
+    }
+};
+
+        const langOrder = ['en', 'ru', 'tj'];
+
+        // 2. ФУНКЦИЯ ОБНОВЛЕНИЯ ЯЗЫКА
+        function updateLanguageUI(lang) {
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                const translation = translations[lang][key];
+                
+                if (translation) {
+                    // Если это поле ввода (INPUT) — меняем placeholder
+                    if (el.tagName === 'INPUT') {
+                        el.placeholder = translation;
+                    } else {
+                        // Для всех остальных элементов (H2, P, SPAN, A, BUTTON) — меняем текст
+                        el.innerText = translation;
+                    }
+                }
+            });
+            // Обновляем текст на кнопке переключателя
+            document.getElementById('langTxt').innerText = lang.toUpperCase();
+            document.documentElement.lang = lang;
+        }
+
+        // 3. ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА
+        function toggleLang() {
+            let current = localStorage.getItem('pref-lang') || 'en';
+            let currentIndex = langOrder.indexOf(current);
+            let nextIndex = (currentIndex + 1) % langOrder.length;
+            let nextLang = langOrder[nextIndex];
+            
+            localStorage.setItem('pref-lang', nextLang);
+            updateLanguageUI(nextLang);
+        }
+
+        // 4. ЛОГИКА ТЕМЫ (Светлая / Темная)
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('pref-theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                // Иконка Солнца
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+            } else {
+                // Иконка Луны
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+
+        // 5. ЗАПУСК ПРИ ЗАГРУЗКЕ
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('pref-lang') || 'en';
+            updateLanguageUI(savedLang);
+            
+            const savedTheme = localStorage.getItem('pref-theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        });
+
+        // Делаем функцию доступной глобально для скриптов в дочерних шаблонах
+        window.updateLanguageUI = updateLanguageUI;
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="title">Confirm Delete</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --danger: #ef4444;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 50%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: 0.3s;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .icon-box {
+            width: 70px;
+            height: 70px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: var(--danger);
+            font-size: 2rem;
+        }
+
+        h2 { margin: 0 0 15px 0; font-weight: 800; font-size: 1.5rem; }
+        p { color: var(--muted); line-height: 1.5; margin-bottom: 30px; }
+        
+        .task-preview {
+            background: rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border: 1px dashed var(--glass-border);
+        }
+
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+
+        .btn {
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { opacity: 0.9; transform: scale(1.02); }
+
+        .btn-cancel { background: var(--glass); color: var(--text); border: 1px solid var(--glass-border); }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); }
+
+        .controls { position: fixed; top: 20px; right: 20px; }
+        .btn-mini { cursor:pointer; background:var(--glass); border:1px solid var(--glass-border); color:var(--text); padding: 8px 12px; border-radius: 10px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="controls">
+    <button class="btn-mini" onclick="toggleLang()" id="langBtn">EN</button>
+</div>
+
+<div class="glass-card">
+    <div class="icon-box">🗑️</div>
+    <h2 data-t="confirm_title">Are you sure?</h2>
+    <p data-t="confirm_p">This action cannot be undone. The following task will be permanently removed from the system.</p>
+    
+    <div class="task-preview">
+        "{{ object.title }}"
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <button type="submit" class="btn btn-danger" data-t="btn_delete">Delete Task</button>
+            <a href="{% url 'task_list' %}" class="btn btn-cancel" data-t="btn_cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+const translations = {
+    en: {
+        confirm_title: "Are you sure?",
+        confirm_p: "This action cannot be undone. The following task will be permanently removed from the system.",
+        btn_delete: "Yes, Delete Task",
+        btn_cancel: "No, Go Back"
+    },
+    ru: {
+        confirm_title: "Вы уверены?",
+        confirm_p: "Это действие нельзя отменить. Указанная задача будет навсегда удалена из системы.",
+        btn_delete: "Да, удалить задачу",
+        btn_cancel: "Нет, вернуться"
+    },
+    tj: {
+        confirm_title: "Шумо боварӣ доред?",
+        confirm_p: "Ин амалро бекор кардан мумкин нест. Супориши зикршуда аз система ба таври доимӣ нест карда мешавад.",
+        btn_delete: "Бале, нест карда шавад",
+        btn_cancel: "Не, баргаштан"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") === "en" ? "ru" : localStorage.getItem("lang") === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", lang);
+    updateLang(lang);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "en");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 data-t="hero-title" style="font-weight: 800; font-size: 2rem; margin-bottom: 10px; letter-spacing: -1px;">
+        Welcome Back
+    </h2>
+    <p data-t="hero-subtitle" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">
+        Please enter your details to sign in
+    </p>
+
+    {% if error_message %}
+        <div style="background: rgba(244, 63, 94, 0.1); color: var(--accent); padding: 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; border: 1px solid rgba(244, 63, 94, 0.2);">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'login' %}" style="text-align: left;">
+        {% csrf_token %}
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label data-t="label-user" style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; letter-spacing: 1px;">
+                Username
+            </label>
+            <div id="username-wrapper">
+                {{ form.username }}
+            </div>
+            {% if form.username.errors %}
+                <span style="color: var(--accent); font-size: 0.75rem;">{{ form.username.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label data-t="label-pass" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; opacity: 0.7; letter-spacing: 1px;">
+                    Password
+                </label>
+                <a href="{% url 'forgot_password' %}" data-t="link-forgot" style="font-size: 0.75rem; color: var(--primary); text-decoration: none; font-weight: 600;">
+                    Forgot?
+                </a>
+            </div>
+            <div id="password-wrapper">
+                {{ form.password }}
+            </div>
+            {% if form.password.errors %}
+                <span style="color: var(--accent); font-size: 0.75rem;">{{ form.password.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn-submit" data-t="btn-login" style="
+            width: 100%; 
+            padding: 16px; 
+            background: linear-gradient(135deg, var(--primary), #818cf8); 
+            color: white; 
+            border: none; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            box-shadow: 0 10px 20px var(--primary-glow);
+            transition: 0.3s;
+        ">
+            SIGN IN
+        </button>
+    </form>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--glass-border);">
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+            <span data-t="footer-signup">New here? </span>
+            <a href="{% url 'register' %}" data-t="btn-reg" style="color: var(--primary); text-decoration: none; font-weight: 700;">
+                Create Account
+            </a>
+        </p>
+    </div>
+
+    <style>
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 12px;
+            color: var(--text-main);
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px var(--primary-glow) !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uInput = document.querySelector('#username-wrapper input');
+            const pInput = document.querySelector('#password-wrapper input');
+
+            if (uInput) {
+                uInput.setAttribute('data-t', 'ph-user');
+                uInput.setAttribute('autocomplete', 'username');
+                uInput.setAttribute('autofocus', 'true');
+            }
+
+            if (pInput) {
+                pInput.setAttribute('data-t', 'ph-pass');
+                pInput.setAttribute('autocomplete', 'current-password');
+            }
+
+            if (window.updateLanguageUI) {
+                const lang = localStorage.getItem('pref-lang') || 'en';
+                window.updateLanguageUI(lang);
+            }
+        });
+    </script>
+{% endblock %}

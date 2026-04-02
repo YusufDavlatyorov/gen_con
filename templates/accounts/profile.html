@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+
+<style>
+:root {
+    --primary: #6366f1;
+    --primary-glow: rgba(99,102,241,0.4);
+    --bg: #020617;
+    --card: rgba(255,255,255,0.05);
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    --border: rgba(255,255,255,0.1);
+}
+
+body[data-theme="light"] {
+    --bg: #f1f5f9;
+    --card: rgba(255,255,255,0.7);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border: rgba(0,0,0,0.1);
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-main);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 40px;
+    backdrop-filter: blur(20px);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-mini {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+}
+
+/* CONTAINER */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+/* CARD */
+.card {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+}
+
+/* BUTTON */
+.btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary), #818cf8);
+    color: white;
+    margin-top: 10px;
+}
+
+.logout { background: #ef4444; text-decoration: none; display: inline-block; }
+
+/* INPUT & TEXTAREA */
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+    color: var(--text-main);
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* AVATAR */
+.profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    margin-bottom: 15px;
+}
+
+/* Общие стили для Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    /* Эффект матового стекла */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Светлая тема */
+body[data-theme="light"] .navbar {
+    background: rgba(255, 255, 255, 0.7);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Контейнер ссылок */
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+/* Стили ссылок */
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    position: relative;
+    padding: 8px 4px;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+/* Эффект при наведении (анимированная линия снизу) */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary); /* Используем твой индиго/фиолетовый */
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px var(--primary);
+}
+
+.nav-links a:hover {
+    opacity: 1;
+    color: var(--primary);
+}
+
+.nav-links a:hover::after {
+    width: 80%;
+}
+
+/* Активная ссылка (если хочешь подсветить текущую страницу) */
+.nav-links a.active {
+    opacity: 1;
+    color: var(--primary);
+}
+
+/* Мобильная адаптивность (скрываем лишнее или уменьшаем отступы) */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+    .nav-links {
+        gap: 15px;
+    }
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+}
+</style>
+</head>
+
+<body data-theme="dark">
+
+<div class="navbar">
+    <div class="nav-links">
+    <!-- Главная страница со списком активных задач -->
+    <a href="{% url 'task_list' %}" data-t="nav_tasks">Задачи</a>
+    
+    <!-- Архив выполненных задач -->
+    <a href="{% url 'completed_tasks' %}" data-t="nav_archive">Архив</a>
+    
+    <!-- Рейтинг волонтеров -->
+    <a href="{% url 'rating' %}" data-t="nav_rating">Рейтинг</a>
+    
+    <!-- О проекте (AI и миссия) -->
+    <a href="{% url 'about' %}" data-t="nav_about">О проекте</a>
+    
+    <!-- Профиль пользователя -->
+    <a href="{% url 'profile' %}" data-t="nav_profile">Профиль</a>
+</div>
+
+    <div class="controls">
+        <div class="btn-mini" onclick="toggleLang()" id="langBtn">RU</div>
+        <div class="btn-mini" onclick="toggleTheme()">🌙</div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- View Card -->
+    <div class="card">
+        <h2 data-t="title">Profile</h2>
+        
+        <!-- Отображение фото -->
+        <div id="avatar-container" style="text-align: center; margin-bottom: 15px;">
+            {% if user.accounts_profile.image %}
+                <img src="{{ user.accounts_profile.image.url }}" class="profile-img" id="display_image" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+            {% else %}
+                <div id="display_placeholder" style="font-size: 50px;">👤</div>
+            {% endif %}
+        </div>
+
+        <p><b data-t="username">Username:</b> <span id="username">{{ user.username }}</span></p>
+        <p><b>Email:</b> {{ user.email }}</p>
+        <p><b data-t="region">Region:</b> <span id="region">{{ user.region }}</span></p>
+        
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+        
+        <p><b data-t="full_name">Full Name:</b> <span id="display_full_name">{{ user.accounts_profile.full_name|default:"---" }}</span></p>
+        <p><b data-t="age">Age:</b> <span id="display_age">{{ user.accounts_profile.age|default:"---" }}</span></p>
+        <p><b data-t="bio">Bio:</b> <span id="display_bio">{{ user.accounts_profile.bio|default:"---" }}</span></p>
+        <p><b data-t="rating">Rating:</b> <span>{{ user.accounts_profile.rating }}</span></p>
+
+        <p>
+            <b data-t="role">Role:</b>
+            {% if user.is_volunteer %} Volunteer {% endif %}
+            {% if user.is_client %} Client {% endif %}
+        </p>
+
+        <button class="btn" onclick="openEdit()" data-t="edit">Edit</button>
+    </div>
+
+    <!-- Edit Card -->
+    <div class="card" id="editBox" style="display:none;">
+        <h3 data-t="edit_profile">Edit Profile</h3>
+
+        <!-- Поле для выбора фото -->
+        <label>Avatar</label>
+        <input type="file" id="newImage" accept="image/*" style="margin-bottom: 15px;">
+
+        <label data-t="username">Username</label>
+        <input type="text" id="newUsername" value="{{ user.username }}">
+
+        <label data-t="region">Region</label>
+        <input type="text" id="newRegion" value="{{ user.region }}">
+
+        <label data-t="full_name">Full Name</label>
+        <input type="text" id="newFullName" value="{{ user.accounts_profile.full_name }}">
+
+        <label data-t="age">Age</label>
+        <input type="number" id="newAge" value="{{ user.accounts_profile.age }}">
+
+        <label data-t="bio">Bio</label>
+        <textarea id="newBio" rows="3">{{ user.accounts_profile.bio }}</textarea>
+
+        <button class="btn" onclick="saveProfile()" data-t="save">Save</button>
+        <button class="btn" style="background: var(--card); border: 1px solid var(--border);" onclick="closeEdit()" data-t="cancel">Cancel</button>
+
+        <p id="msg" style="margin-top:10px; font-weight:bold;"></p>
+    </div>
+
+    <div class="card">
+        <a href="{% url 'logout' %}" class="btn logout" data-t="logout">Logout</a>
+    </div>
+
+</div>
+
+<footer>
+    <span data-t="footer">Connected by Care</span>
+</footer>
+
+<script>
+/* ===== TRANSLATIONS ===== */
+const translations = {
+    en: {
+        title: "Profile",
+        username: "Username:",
+        region: "Region:",
+        role: "Role:",
+        full_name: "Full Name:",
+        age: "Age:",
+        bio: "Bio:",
+        rating: "Rating:",
+        edit: "Edit",
+        edit_profile: "Edit Profile",
+        save: "Save",
+        cancel: "Cancel",
+        logout: "Logout",
+        footer: "Connected by Care",
+        saved: "Saved!"
+    },
+    ru: {
+        title: "Профиль",
+        username: "Имя пользователя:",
+        region: "Регион:",
+        role: "Роль:",
+        full_name: "Полное имя:",
+        age: "Возраст:",
+        bio: "О себе:",
+        rating: "Рейтинг:",
+        edit: "Редактировать",
+        edit_profile: "Редактировать профиль",
+        save: "Сохранить",
+        cancel: "Отмена",
+        logout: "Выйти",
+        footer: "Connected by Care",
+        saved: "Сохранено!"
+    },
+    tj: {
+        title: "Профил",
+        username: "Номи корбар:",
+        region: "Минтақа:",
+        role: "Нақш:",
+        full_name: "Ному насаб:",
+        age: "Синну сол:",
+        bio: "Дар бораи худ:",
+        rating: "Рейтинг:",
+        edit: "Таҳрир",
+        edit_profile: "Таҳрири профил",
+        save: "Сабт",
+        cancel: "Бекор",
+        logout: "Баромад",
+        footer: "Connected by Care",
+        saved: "Захира шуд!"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el=>{
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]){
+            el.textContent = translations[lang][key];
+        }
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") || "en";
+    let next = lang === "en" ? "ru" : lang === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", next);
+    updateLang(next);
+}
+
+function toggleTheme(){
+    const body = document.body;
+    let next = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    body.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+}
+
+/* ===== PROFILE LOGIC ===== */
+function openEdit(){ document.getElementById("editBox").style.display="block"; }
+function closeEdit(){ document.getElementById("editBox").style.display="none"; }
+
+function getCSRFToken() {
+    return document.cookie.split(';')
+        .find(c => c.trim().startsWith('csrftoken='))?.split('=')[1];
+}
+
+function saveProfile(){
+    const lang = localStorage.getItem("lang") || "en";
+    
+    // Используем FormData для передачи файлов
+    let formData = new FormData();
+    formData.append("username", document.getElementById("newUsername").value);
+    formData.append("region", document.getElementById("newRegion").value);
+    formData.append("full_name", document.getElementById("newFullName").value);
+    formData.append("age", document.getElementById("newAge").value);
+    formData.append("bio", document.getElementById("newBio").value);
+    
+    const fileInput = document.getElementById("newImage");
+    if(fileInput.files[0]) {
+        formData.append("image", fileInput.files[0]);
+    }
+
+    fetch("/update-profile/", {
+        method:"POST",
+        headers:{
+            "X-CSRFToken": getCSRFToken()
+            // Content-Type указывать не нужно для FormData
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(d => {
+        if(d.success || d.status === 'ok'){
+            // Перезагружаем страницу для обновления всех данных и фото
+            document.getElementById("msg").innerText = translations[lang].saved;
+            document.getElementById("msg").style.color = "#4ade80";
+            setTimeout(() => { 
+                location.reload(); 
+            }, 1000);
+        } else {
+            document.getElementById("msg").innerText = "Error!";
+            document.getElementById("msg").style.color = "#f87171";
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+    const lang = localStorage.getItem("lang") || "en";
+    updateLang(lang);
+    const theme = localStorage.getItem("theme") || "dark";
+    document.body.setAttribute("data-theme", theme);
+});
+</script>

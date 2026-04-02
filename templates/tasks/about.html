@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="nav_about">About Us</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --ai-glow: #06b6d4;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+            color: var(--text);
+            transition: 0.3s;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 5%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .ai-section {
+            border: 1px solid var(--ai-glow);
+            background: rgba(6, 182, 212, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-section::after {
+            content: "AI";
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            font-size: 8rem;
+            font-weight: 900;
+            opacity: 0.05;
+            color: var(--ai-glow);
+        }
+
+        .ai-badge {
+            background: var(--ai-glow);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        footer { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+        .controls button { cursor:pointer; background:none; border:none; color:var(--text); margin-left:10px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="/tasks/" style="color:var(--text); text-decoration:none; margin-right:20px;" data-t="nav_tasks">Tasks</a>
+        <a href="/profile/" style="color:var(--text); text-decoration:none;" data-t="nav_profile">Profile</a>
+    </div>
+    <div class="controls">
+        <button onclick="toggleLang()" id="langBtn">EN</button>
+        <button onclick="toggleTheme()">🌓</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card">
+        <h1 data-t="about_title">About Connected by Care</h1>
+        <p data-t="about_p1">We are a platform created to connect those who need help with those who are ready to give it. Our mission is to make volunteering simple, transparent, and rewarding.</p>
+    </div>
+
+    <div class="glass-card ai-section">
+        <div class="ai-badge">Smart Matching</div>
+        <h2 data-t="ai_title" style="color: var(--ai-glow);">Powered by Artificial Intelligence</h2>
+        <p data-t="ai_p">Our platform uses advanced <b>AI algorithms</b> to analyze tasks and match them with the most suitable volunteers. The system considers your location, skills, and current rating to ensure help arrives as fast as possible.</p>
+    </div>
+
+    <div class="glass-card">
+        <h2 data-t="vision_title">Our Vision</h2>
+        <p data-t="vision_p">A world where no one is left alone with their problems. Through technology and human kindness, we build a stronger community every day.</p>
+    </div>
+</div>
+
+<footer>Connected by Care &copy; 2026</footer>
+
+<script>
+const translations = {
+    en: {
+        nav_tasks: "Tasks", nav_profile: "Profile", nav_about: "About",
+        about_title: "About Connected by Care",
+        about_p1: "We are a platform created to connect those who need help with those who are ready to give it. Our mission is to make volunteering simple, transparent, and rewarding.",
+        ai_title: "Powered by Artificial Intelligence",
+        ai_p: "Our platform uses advanced AI algorithms to analyze tasks and match them with the most suitable volunteers. The system considers your location, skills, and current rating to ensure help arrives as fast as possible.",
+        vision_title: "Our Vision",
+        vision_p: "A world where no one is left alone with their problems. Through technology and human kindness, we build a stronger community every day."
+    },
+    ru: {
+        nav_tasks: "Задачи", nav_profile: "Профиль", nav_about: "О проекте",
+        about_title: "О проекте Connected by Care",
+        about_p1: "Мы — платформа, созданная для того, чтобы соединять тех, кому нужна помощь, с теми, кто готов её оказать. Наша миссия — сделать волонтерство простым, прозрачным и полезным.",
+        ai_title: "На базе Искусственного Интеллекта",
+        ai_p: "Наша платформа использует продвинутые алгоритмы ИИ для анализа задач и их сопоставления с наиболее подходящими волонтерами. Система учитывает ваше местоположение, навыки и текущий рейтинг.",
+        vision_title: "Наше Видение",
+        vision_p: "Мир, в котором никто не остается наедине со своими проблемами. С помощью технологий и человеческой доброты мы строим сильное общество."
+    },
+    tj: {
+        nav_tasks: "Супоришҳо", nav_profile: "Профил", nav_about: "Дар бораи мо",
+        about_title: "Дар бораи Connected by Care",
+        about_p1: "Мо платформае ҳастем, ки барои пайваст кардани онҳое, ки ба кӯмак ниёз доранд, бо онҳое, ки барои кӯмак омодаанд, сохта шудааст. Миссияи мо волонтёриро осон ва шаффоф кардан аст.",
+        ai_title: "Дар асоси Интеллекти Сунъӣ",
+        ai_p: "Платформаи мо алгоритмҳои пешрафтаи ИИ-ро барои таҳлили супоришҳо ва мувофиқат кардани онҳо бо волонтёрони мувофиқ истифода мебарад. Система макон, маҳорат ва рейтинги шуморо ба назар мегирад.",
+        vision_title: "Нигоҳи мо",
+        vision_p: "Ҷаҳоне, ки дар он ҳеҷ кас бо мушкилоти худ танҳо намемонад. Бо ёрии технология ва меҳрубонии инсонӣ мо ҷомеаи қавитар месозем."
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") === "en" ? "ru" : localStorage.getItem("lang") === "ru" ? "tj" : "en";
+    localStorage.setItem("lang", lang);
+    updateLang(lang);
+}
+
+function toggleTheme(){
+    const body = document.body;
+    let theme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    body.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "en");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+});
+</script>
+</body>
+</html>

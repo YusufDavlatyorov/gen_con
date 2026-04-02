@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="confirm-container" style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    
+    <div class="glass-card confirm-card" style="max-width: 450px; width: 100%; text-align: center; padding: 40px;">
+        
+        <h1 data-t="hero-title-reset" style="font-weight: 900; font-size: 2rem; margin-bottom: 10px;">
+            Reset Password
+        </h1>
+        
+        <p data-t="hero-subtitle-reset" style="color: var(--text-muted); margin-bottom: 25px;">
+            Enter your email and we will send you a reset link
+        </p>
+
+        {% if message %}
+            <p style="color: var(--primary); margin-bottom: 20px;">
+                {{ message }}
+            </p>
+        {% endif %}
+
+        <form method="POST" action="{% url 'forgot_password' %}">
+            {% csrf_token %}
+
+            <div id="email-wrapper">
+                {{ form.email }}
+            </div>
+
+            {% if form.email.errors %}
+                <span style="color: red;">{{ form.email.errors.0 }}</span>
+            {% endif %}
+
+            <button type="submit" class="btn-primary-neon" data-t="btn-reset-send" style="margin-top: 20px;">
+                Send Reset Link
+            </button>
+        </form>
+
+        <div style="margin-top: 20px;">
+            <a href="{% url 'login' %}" style="color: var(--primary); text-decoration: none;">
+                ← Back to login
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.confirm-card {
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+}
+
+input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px;
+    color: var(--text-main);
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.btn-primary-neon {
+    padding: 14px 25px;
+    border-radius: 12px;
+    font-weight: 700;
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary-neon:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // подключаем перевод к input
+    const emailInput = document.querySelector('#email-wrapper input');
+
+    if (emailInput) {
+        emailInput.setAttribute('data-t', 'ph-email');
+    }
+
+    // обновляем язык
+    if (window.updateLanguageUI) {
+        const lang = localStorage.getItem('pref-lang') || 'en';
+        window.updateLanguageUI(lang);
+    }
+});
+</script>
+
+{% endblock %}

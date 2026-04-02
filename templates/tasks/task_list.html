@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-t="nav_tasks">Задачи</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+            --muted: #9ca3af;
+        }
+
+        body[data-theme="light"] {
+            --bg: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text);
+            transition: 0.3s ease;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a { 
+            color: var(--text); 
+            text-decoration: none; 
+            font-weight: 500; 
+            opacity: 0.7; 
+            transition: 0.3s;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--primary); }
+
+        .controls { display: flex; gap: 10px; }
+        .btn-mini { 
+            cursor: pointer; padding: 8px 12px; border-radius: 10px; 
+            background: var(--glass); border: 1px solid var(--glass-border); color: var(--text);
+        }
+
+        /* GRID & CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        /* GLASS CARD */
+        .task-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .task-card.show { opacity: 1; transform: translateY(0); }
+
+        .task-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .task-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+        .task-desc { color: var(--muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+
+        .meta-info {
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .meta-info b { color: var(--primary); }
+
+        /* BUTTONS */
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--primary); border: none; }
+        .btn-success { background: #10b981; border: none; }
+        .btn-danger { color: #ef4444; }
+        .btn-action:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+        footer { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; }
+        
+    </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="{% url 'task_list' %}" data-t="nav_tasks">Задачи</a>
+        <a href="{% url 'completed_tasks' %}" data-t="nav_archive">Архив</a>
+        <a href="{% url 'rating' %}" data-t="nav_rating">Рейтинг</a>
+        <a href="{% url 'about' %}" data-t="nav_about">О проекте</a>
+        <a href="{% url 'profile' %}" data-t="nav_profile">Профиль</a>
+    </div>
+    <div class="controls">
+        <button class="btn-mini" onclick="toggleLang()" id="langBtn">RU</button>
+        <button class="btn-mini" onclick="toggleTheme()">🌓</button>
+    </div>
+</nav>
+<!-- Стили для фильтра (можно вынести в CSS файл или оставить в <style>) -->
+<style>
+    .filter-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        padding-left: 120px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted, #a0a0a0);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Стилизация самих инпутов */
+    .filter-container input[type="text"],
+    .filter-container select {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 10px 15px !important;
+        transition: all 0.3s ease;
+    }
+
+    .filter-container input:focus, .filter-container select:focus {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border-color: #3b82f6 !important; /* Цвет акцента */
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Чекбоксы */
+    .checkbox-group {
+        flex-direction: row !important;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px 0;
+    }
+
+    .btn-filter {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+    }
+</style>
+
+<!-- Сама форма -->
+<div class="filter-container">
+    <form method="get" id="filter-form">
+        <div class="filter-grid">
+            {% for field in filter.form %}
+                <div class="filter-group {% if field.field.widget.input_type == 'checkbox' %}checkbox-group{% endif %}">
+                    {% if field.field.widget.input_type != 'checkbox' %}
+                        <label class="filter-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% endif %}
+                    
+                    {{ field }}
+                    
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <label class="filter-label" style="margin: 0; cursor: pointer;" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter w-100">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    Применить
+                </button>
+            </div>
+            <a href="{%url 'task_add'%}" style="background-color: #3b82f6; padding: 13px; width: 90px; color: white; font-weight: bold; border-radius: 10px;">+ Create</a>
+        </div>
+    </form>
+    
+</div>
+
+
+
+
+
+<div class="container">
+    <div class="header-box">
+        <h1 style="margin:0;" data-t="nav_tasks">Задачи</h1>
+        <!-- Исправлено: проверяем системные поля модели Users -->
+        {% if user.is_client or user.is_superuser %}
+            <a href="{% url 'task_add' %}" class="btn-action btn-primary" style="flex:none; padding: 12px 25px;" data-t="add_task">+ Создать</a>
+        {% endif %}
+    </div>
+
+    <div class="task-grid" id="taskGrid">
+        {% for task in tasks %}
+        <div class="task-card">
+            <div class="card-content">
+                <div class="task-title">{{ task.title }}</div>
+                <p class="task-desc">{{ task.description|truncatechars:100 }}</p>
+                
+                <div class="meta-info">
+                    <div style="margin-bottom: 5px;">
+                        <span style="opacity:0.6;" data-t="client">Клиент</span>: <b>{{ task.client.username }}</b>
+                    </div>
+                    <div>
+                        <span style="opacity:0.6;" data-t="volunteer">Волонтер</span>: <b>{{ task.volunteer.username|default:"---" }}</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'task_detail' task.id %}" class="btn-action" title="Detail">👀</a>
+
+                <!-- Исправлено: Волонтер берет задачу -->
+                {% if user.is_volunteer and not task.volunteer %}
+                    <a href="{% url 'accept_task' task.id %}" class="btn-action" style="background: #8b5cf6;" data-t="btn_help">Помочь</a>
+                {% endif %}
+
+                <!-- Исправлено: Волонтер завершает СВОЮ задачу -->
+                {% if user.is_volunteer and task.volunteer == user %}
+                    <a href="{% url 'complete_task' task.id %}" class="btn-action btn-success" data-t="btn_done">Готово</a>
+                {% endif %}
+
+                <!-- Исправлено: Редактирование и удаление для владельца или админа -->
+                {% if user.is_superuser or user == task.client %}
+                    <a href="{% url 'task_edit' task.id %}" class="btn-action">✏️</a>
+                    <a href="{% url 'task_delete' task.id %}" class="btn-action btn-danger">🗑️</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; opacity: 0.5;" data-t="no_tasks">
+                Активных задач пока нет.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<footer>
+    <p data-t="footer">Connected by Care &copy; 2026</p>
+</footer>
+
+<script>
+const translations = {
+    en: {
+        nav_tasks: "Tasks", nav_archive: "Archive", nav_rating: "Rating", nav_about: "About", nav_profile: "Profile",
+        add_task: "New Task", client: "Client", volunteer: "Volunteer",
+        btn_help: "Help", btn_done: "Done", no_tasks: "No active tasks.", footer: "Connected by Care"
+    },
+    ru: {
+        nav_tasks: "Задачи", nav_archive: "Архив", nav_rating: "Рейтинг", nav_about: "О проекте", nav_profile: "Профиль",
+        add_task: "Создать", client: "Клиент", volunteer: "Волонтер",
+        btn_help: "Помочь", btn_done: "Готово", no_tasks: "Активных задач нет.", footer: "Связаны заботой"
+    },
+    tj: {
+        nav_tasks: "Супоришҳо", nav_archive: "Архив", nav_rating: "Рейтинг", nav_about: "Дар бораи мо", nav_profile: "Профил",
+        add_task: "Илова", client: "Мизоҷ", volunteer: "Волонтёр",
+        btn_help: "Ёрӣ додан", btn_done: "Иҷро шуд", no_tasks: "Супоришҳои фаъол нестанд.", footer: "Бо ғамхорӣ пайвастем"
+    }
+};
+
+function updateLang(lang){
+    document.querySelectorAll("[data-t]").forEach(el => {
+        const key = el.getAttribute("data-t");
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.getElementById("langBtn").innerText = lang.toUpperCase();
+}
+
+function toggleLang(){
+    let lang = localStorage.getItem("lang") || "ru";
+    let next = lang === "ru" ? "tj" : lang === "tj" ? "en" : "ru";
+    localStorage.setItem("lang", next);
+    updateLang(next);
+}
+
+function toggleTheme(){
+    const body = document.body;
+    let next = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    body.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateLang(localStorage.getItem("lang") || "ru");
+    document.body.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+    
+    // Анимация появления карточек
+    document.querySelectorAll('.task-card').forEach((card, i) => {
+        setTimeout(() => card.classList.add('show'), i * 100);
+    });
+});
+</script>
+</body>
+</html>
