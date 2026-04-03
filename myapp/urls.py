@@ -10,7 +10,9 @@ from .views import (
     complete_task,
     about_view,
     rating_view,
-    task_toggle
+    task_toggle,
+    ai_advisor_view,
+    ai_chat_view
 )
 
 urlpatterns = [
@@ -30,5 +32,7 @@ urlpatterns = [
 
     path('about/', about_view, name='about'),
     path('rating/', rating_view, name='rating'),
-     path('tasks/<int:pk>/toggle/', task_toggle, name='task_toggle'),
+    path('tasks/<int:pk>/toggle/', task_toggle, name='task_toggle'),
+    path('ai/', ai_advisor_view, name='ai_advisor'),
+    path('ai/chat/', ai_chat_view, name='ai_chat'),
 ]

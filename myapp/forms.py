@@ -4,13 +4,15 @@ from .models import Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'deadline', 'is_completed']
+        # Добавили address и phone в список полей
+        fields = ['title', 'description', 'address', 'phone', 'deadline', 'is_completed']
         
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Введите название...', 'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Описание...'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Описание...', 'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'placeholder': 'Укажите адрес...', 'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'placeholder': '+992 (___) ___ __ __', 'class': 'form-control'}),
             'deadline': forms.DateTimeInput(
-                # Формат ISO важен для корректной работы datetime-local
                 format='%Y-%m-%dT%H:%M',
                 attrs={
                     'type': 'datetime-local',
@@ -22,6 +24,4 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        # Добавляем форматы, которые Django будет пробовать применить к строке из браузера
         self.fields['deadline'].input_formats = ['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M']
-

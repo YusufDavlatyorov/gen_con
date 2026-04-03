@@ -17,7 +17,7 @@ class RolePermissions:
     @staticmethod
     def can_add_task(user):
         # Только клиенты и админы могут создавать
-        return user.is_authenticated and (user.is_superuser or user.is_client)
+        return user.is_authenticated and (user.is_superuser or user.is_client or user.is_volunteer)
 
     @staticmethod
     def can_edit_task(user, task):

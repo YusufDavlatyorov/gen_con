@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'myapp',
     'django_filters',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -160,3 +160,6 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 LOGIN_REDIRECT_URL = 'profile'
+
+
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')

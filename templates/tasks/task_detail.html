@@ -117,7 +117,7 @@
     </div>
 </nav>
 
-<div class="container">
+<<div class="container">
     <div class="detail-card">
         {% if task.is_completed %}
             <div class="status-tag status-done" data-t="status_done">Completed</div>
@@ -137,6 +137,19 @@
                 <label data-t="label_vol">Volunteer</label>
                 <span>{{ task.volunteer.username|default:"---" }}</span>
             </div>
+            
+            <!-- Добавлено: Адрес -->
+            <div class="info-item">
+                <label data-t="label_address">Address</label>
+                <span>{{ task.address|default:"---" }}</span>
+            </div>
+
+            <!-- Добавлено: Телефон -->
+            <div class="info-item">
+                <label data-t="label_phone">Phone</label>
+                <span>{{ task.phone|default:"---" }}</span>
+            </div>
+
             <div class="info-item">
                 <label data-t="label_created">Created</label>
                 <span>{{ task.created_at|date:"d.m.Y" }}</span>
@@ -146,6 +159,7 @@
                 <span>{{ task.deadline|date:"d.m.Y"|default:"---" }}</span>
             </div>
         </div>
+
 
         <div class="actions">
             {% if user.role == 'volunteer' and not task.volunteer and not task.is_completed %}

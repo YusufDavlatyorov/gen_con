@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Советник — ConnectedCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-glow: rgba(124, 58, 237, 0.4);
+            --accent: #06d6a0;
+            --accent2: #f72585;
+            --bg: #05080f;
+            --bg2: #0a0f1e;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.09);
+            --text: #f0f4ff;
+            --muted: #8892a4;
+            --card-bg: rgba(10, 15, 35, 0.7);
+        }
+        body[data-theme="light"] {
+            --bg: #f0f2ff; --bg2: #e8ecff;
+            --glass: rgba(255,255,255,0.75);
+            --glass-border: rgba(100,80,200,0.15);
+            --text: #0d0a1e; --muted: #5e5a7a;
+            --card-bg: rgba(255,255,255,0.8);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 15% 20%, rgba(124,58,237,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 60% at 85% 70%, rgba(6,214,160,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 50% 100%, rgba(247,37,133,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb { position:fixed; border-radius:50%; filter:blur(80px); opacity:0.15; pointer-events:none; z-index:0; animation:driftOrb 18s ease-in-out infinite alternate; }
+        .orb-1 { width:500px; height:500px; background:var(--primary); top:-120px; left:-150px; }
+        .orb-2 { width:350px; height:350px; background:var(--accent); bottom:10%; right:-80px; animation-delay:-6s; }
+        .orb-3 { width:280px; height:280px; background:var(--accent2); top:50%; left:40%; animation-delay:-12s; }
+        @keyframes driftOrb { from { transform:translate(0,0) scale(1); } to { transform:translate(30px,40px) scale(1.1); } }
+
+        .navbar {
+            display:flex; justify-content:space-between; align-items:center;
+            padding:0 5%; height:70px;
+            background:rgba(5,8,15,0.6);
+            backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+            border-bottom:1px solid var(--glass-border);
+            position:sticky; top:0; z-index:1000;
+        }
+        body[data-theme="light"] .navbar { background:rgba(240,242,255,0.75); }
+        .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.25rem; background:linear-gradient(135deg,var(--primary),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .nav-links { display:flex; gap:6px; }
+        .nav-links a { color:var(--muted); text-decoration:none; font-weight:500; font-size:0.9rem; padding:7px 14px; border-radius:10px; transition:all 0.25s ease; }
+        .nav-links a:hover { color:var(--text); background:var(--glass); }
+        .nav-links a.active { color:var(--text); background:var(--glass); }
+        .controls { display:flex; gap:8px; align-items:center; }
+        .btn-mini { cursor:pointer; padding:7px 14px; border-radius:10px; background:var(--glass); border:1px solid var(--glass-border); color:var(--text); font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; transition:all 0.25s ease; }
+        .btn-mini:hover { background:rgba(124,58,237,0.2); border-color:var(--primary); }
+
+        .page-hero {
+            position:relative; z-index:1;
+            padding:50px 5% 24px;
+            max-width:900px; margin:0 auto; width:100%;
+            text-align:center;
+        }
+        .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:14px; }
+        .hero-eyebrow span { width:28px; height:2px; background:var(--accent); border-radius:2px; }
+        .hero-title { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3.2rem); font-weight:800; line-height:1.05; letter-spacing:-1.5px; margin-bottom:12px; }
+        .hero-title em { font-style:normal; background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .hero-sub { color:var(--muted); font-size:1rem; line-height:1.6; max-width:560px; margin:0 auto; }
+
+        .role-selector {
+            position:relative; z-index:1;
+            display:flex; gap:12px; justify-content:center;
+            padding:24px 5% 0; flex-wrap:wrap;
+        }
+        .role-btn {
+            padding:12px 28px; border-radius:14px; cursor:pointer;
+            font-family:'Syne',sans-serif; font-weight:700; font-size:0.92rem;
+            border:1px solid var(--glass-border);
+            background:var(--card-bg); color:var(--muted);
+            transition:all 0.3s ease; backdrop-filter:blur(12px);
+        }
+        .role-btn:hover { border-color:var(--primary); color:var(--text); }
+        .role-btn.active { background:linear-gradient(135deg,var(--primary),#9333ea); border-color:transparent; color:white; box-shadow:0 4px 20px rgba(124,58,237,0.4); }
+        .role-btn.active-green { background:linear-gradient(135deg,#059669,#10b981); border-color:transparent; color:white; box-shadow:0 4px 20px rgba(16,185,129,0.35); }
+
+        .chat-wrapper {
+            position:relative; z-index:1;
+            max-width:900px; margin:24px auto 0;
+            padding:0 5% 60px; flex:1;
+            display:flex; flex-direction:column;
+        }
+
+        .chat-box {
+            background:var(--card-bg);
+            backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid var(--glass-border);
+            border-radius:24px; padding:28px;
+            min-height:420px; max-height:520px;
+            overflow-y:auto;
+            display:flex; flex-direction:column; gap:14px;
+            margin-bottom:16px;
+            box-shadow:0 8px 40px rgba(0,0,0,0.25);
+        }
+
+        .msg { max-width:80%; padding:14px 18px; border-radius:18px; line-height:1.6; font-size:0.92rem; animation:msgIn 0.3s ease; }
+        @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+        .msg.user { background:linear-gradient(135deg,var(--primary),#9333ea); color:white; align-self:flex-end; border-bottom-right-radius:5px; box-shadow:0 4px 16px rgba(124,58,237,0.3); }
+        .msg.assistant { background:var(--glass); border:1px solid var(--glass-border); color:var(--text); align-self:flex-start; border-bottom-left-radius:5px; }
+        body[data-theme="light"] .msg.assistant { background:rgba(255,255,255,0.9); }
+        .msg.typing { color:var(--muted); font-style:italic; align-self:flex-start; background:transparent; border:none; padding:8px 0; }
+
+        .typing-dots { display:inline-flex; gap:4px; align-items:center; }
+        .typing-dots span { width:7px; height:7px; background:var(--muted); border-radius:50%; animation:blink 1.2s ease-in-out infinite; }
+        .typing-dots span:nth-child(2) { animation-delay:0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay:0.4s; }
+        @keyframes blink { 0%,80%,100% { opacity:0.2; transform:scale(0.8); } 40% { opacity:1; transform:scale(1); } }
+
+        .input-area { display:flex; gap:10px; align-items:flex-end; }
+        .input-area textarea {
+            flex:1; padding:14px 18px;
+            background:var(--card-bg); border:1px solid var(--glass-border);
+            color:var(--text); border-radius:16px;
+            font-family:'DM Sans',sans-serif; font-size:0.95rem;
+            resize:none; outline:none; transition:all 0.3s ease;
+            max-height:120px; line-height:1.5; backdrop-filter:blur(12px);
+        }
+        .input-area textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow); background:rgba(124,58,237,0.06); }
+        .input-area textarea::placeholder { color:var(--muted); }
+
+        .send-btn {
+            width:50px; height:50px; min-width:50px;
+            background:linear-gradient(135deg,var(--primary),#9333ea);
+            border:none; border-radius:14px; color:white; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition:all 0.3s ease; box-shadow:0 4px 16px rgba(124,58,237,0.35);
+        }
+        .send-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,58,237,0.5); }
+        .send-btn:disabled { background:rgba(100,100,120,0.3); box-shadow:none; cursor:not-allowed; transform:none; }
+
+        .model-info {
+            display:flex; align-items:center; gap:10px;
+            padding:10px 16px;
+            background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2);
+            border-radius:12px; margin-bottom:16px; font-size:0.8rem; color:var(--muted);
+        }
+        .model-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+        .model-name { color:#a78bfa; font-weight:600; }
+
+        .quick-prompts { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+        .qprompt { padding:7px 14px; border-radius:100px; background:var(--glass); border:1px solid var(--glass-border); color:var(--muted); font-size:0.78rem; cursor:pointer; transition:all 0.25s ease; }
+        .qprompt:hover { border-color:var(--primary); color:var(--text); background:rgba(124,58,237,0.1); }
+
+        footer { position:relative; z-index:1; text-align:center; padding:40px 20px; color:var(--muted); font-size:0.85rem; border-top:1px solid var(--glass-border); }
+        .footer-inner { display:flex; flex-direction:column; align-items:center; gap:10px; }
+        .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--primary),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.4); border-radius:3px; }
+
+        @media(max-width:768px) {
+            .nav-links { gap:2px; }
+            .nav-links a { padding:6px 10px; font-size:0.82rem; }
+            .msg { max-width:92%; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<nav class="navbar">
+    <div class="nav-logo">⬡ ConnectedCare</div>
+    <div class="nav-links">
+        <a href="{% url 'task_list' %}" data-t="nav_tasks">Задачи</a>
+        <a href="{% url 'completed_tasks' %}" data-t="nav_archive">Архив</a>
+        <a href="{% url 'rating' %}" data-t="nav_rating">Рейтинг</a>
+        <a href="{% url 'ai_advisor' %}" class="active" data-t="nav_ai">AI Советник</a>
+        <a href="{% url 'about' %}" data-t="nav_about">О проекте</a>
+        <a href="{% url 'profile' %}" data-t="nav_profile">Профиль</a>
+    </div>
+    <div class="controls">
+        <button class="btn-mini" onclick="toggleLang()" id="langBtn">RU</button>
+        <button class="btn-mini" onclick="toggleTheme()">🌓</button>
+    </div>
+</nav>
+
+<div class="page-hero">
+    <div class="hero-eyebrow"><span></span><span data-t="ai_eyebrow">AI Советник</span><span></span></div>
+    <h1 class="hero-title" data-t="ai_title">Умный помощник <em>для всех</em></h1>
+    <p class="hero-sub" data-t="ai_sub">Советы для волонтёров по уходу за пожилыми. Медицинский гид — к какому врачу обратиться. Отвечает на 3 языках.</p>
+</div>
+
+<div class="role-selector">
+    <button class="role-btn active" id="roleVolunteer" onclick="setRole('volunteer')" data-t="role_volunteer">👨‍⚕️ Я волонтёр</button>
+    <button class="role-btn" id="roleElderly" onclick="setRole('elderly')" data-t="role_elderly">👴 Я пожилой человек</button>
+</div>
+
+<div class="chat-wrapper">
+    <div class="model-info">
+        <div class="model-dot"></div>
+        <span data-t="powered_by">Работает на</span>
+        <span class="model-name">OpenRouter · Gemini Flash</span>
+        <span style="margin-left:auto; font-size:0.75rem;" data-t="lang_auto">🌍 Авто-язык</span>
+    </div>
+
+    <div class="quick-prompts" id="quickPrompts"></div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="msg assistant">
+            👋 Здравствуйте! Я ваш AI советник. Выберите роль выше и задайте вопрос — я отвечу на русском, таджикском или английском языке.
+        </div>
+    </div>
+
+    <div class="input-area">
+        <textarea id="msgInput" rows="1" placeholder="Напишите вопрос..." oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-inner">
+        <div class="footer-logo">⬡ ConnectedCare</div>
+        <p data-t="footer">Connected by Care © 2026</p>
+    </div>
+</footer>
+
+<script>
+// ─── TRANSLATIONS ───
+const translations = {
+    ru: {
+        nav_tasks:"Задачи", nav_archive:"Архив", nav_rating:"Рейтинг",
+        nav_ai:"AI Советник", nav_about:"О проекте", nav_profile:"Профиль",
+        ai_eyebrow:"AI Советник", ai_title:"Умный помощник для всех",
+        ai_sub:"Советы для волонтёров по уходу за пожилыми. Медицинский гид — к какому врачу обратиться.",
+        role_volunteer:"👨‍⚕️ Я волонтёр", role_elderly:"👴 Я пожилой человек",
+        powered_by:"Работает на", lang_auto:"🌍 Авто-язык",
+        footer:"Connected by Care © 2026", placeholder:"Напишите вопрос..."
+    },
+    tj: {
+        nav_tasks:"Супоришҳо", nav_archive:"Архив", nav_rating:"Рейтинг",
+        nav_ai:"AI Маслиҳатгар", nav_about:"Дар бораи мо", nav_profile:"Профил",
+        ai_eyebrow:"AI Маслиҳатгар", ai_title:"Ёрдамчии зирак барои ҳама",
+        ai_sub:"Маслиҳатҳо барои волонтёрон. Роҳнамои тиббӣ — ба кадом духтур муроҷиат кунед.",
+        role_volunteer:"👨‍⚕️ Ман волонтёрам", role_elderly:"👴 Ман одами калонсолам",
+        powered_by:"Кор мекунад бо", lang_auto:"🌍 Забони авто",
+        footer:"Бо ғамхорӣ пайвастем © 2026", placeholder:"Саволи худро нависед..."
+    },
+    en: {
+        nav_tasks:"Tasks", nav_archive:"Archive", nav_rating:"Rating",
+        nav_ai:"AI Advisor", nav_about:"About", nav_profile:"Profile",
+        ai_eyebrow:"AI Advisor", ai_title:"Smart assistant for everyone",
+        ai_sub:"Care tips for volunteers. Medical guide — which doctor to visit.",
+        role_volunteer:"👨‍⚕️ I'm a volunteer", role_elderly:"👴 I'm an elderly person",
+        powered_by:"Powered by", lang_auto:"🌍 Auto-language",
+        footer:"Connected by Care © 2026", placeholder:"Type your question..."
+    }
+};
+
+// ─── QUICK PROMPTS ───
+const quickPrompts = {
+    volunteer: {
+        ru:["Как помочь при падении?","Что делать если отказывается есть?","Как общаться с деменцией?","Признаки инсульта"],
+        tj:["Ҳангоми афтодан чӣ кор кунем?","Агар хӯрок нахӯрад?","Бо деменсия чӣ гуна муошират кунем?","Аломатҳои инсулт"],
+        en:["What to do if they fall?","They refuse to eat?","How to talk with dementia?","Signs of a stroke"]
+    },
+    elderly: {
+        ru:["Болит сердце — к кому идти?","Боли в спине — какой врач?","Плохой сон — что делать?","Боль в коленях"],
+        tj:["Дил дард мекунад — ба кӣ муроҷиат кунам?","Дарди камар — кадом духтур?","Хоби бад — чӣ кор кунам?","Дарди зонуҳо"],
+        en:["Heart pain — which doctor?","Back pain — which specialist?","Can't sleep?","Knee pain — who to see?"]
+    }
+};
+
+// ─── SYSTEM PROMPTS ───
+const systemPrompts = {
+    volunteer: `You are an expert assistant for volunteers caring for elderly people.
+IMPORTANT LANGUAGE RULE: Always detect the language of the user's message and respond in the SAME language.
+- Russian → respond in Russian
+- Tajik → respond in Tajik
+- English → respond in English
+Give practical advice about: physical care, communication, emergency situations, caregiver burnout prevention.
+Always recommend seeing a doctor for medical concerns.`,
+
+    elderly: `You are a kind, patient medical advisor for elderly people.
+IMPORTANT LANGUAGE RULE: Always detect the language of the user's message and respond in the SAME language.
+- Russian → respond in Russian
+- Tajik → respond in Tajik
+- English → respond in English
+Help them find the right doctor based on symptoms:
+- Heart/chest pain → Cardiologist
+- Joint pain → Orthopedist/Rheumatologist
+- Memory issues → Neurologist
+- Stomach problems → Gastroenterologist
+- SEVERE symptoms → call 103 immediately.
+Use simple language. Be warm and supportive.`
+};
+
+// ─── STATE ───
+let currentRole = 'volunteer';
+let currentLang = localStorage.getItem('lang') || 'ru';
+let messageHistory = [];
+let isLoading = false;
+
+// ─── CSRF ───
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        for (let cookie of document.cookie.split(';')) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ─── ROLE SWITCH ───
+function setRole(role) {
+    currentRole = role;
+    messageHistory = [];
+
+    document.getElementById('roleVolunteer').className = 'role-btn' + (role === 'volunteer' ? ' active' : '');
+    document.getElementById('roleElderly').className = 'role-btn' + (role === 'elderly' ? ' active-green' : '');
+
+    document.getElementById('chatBox').innerHTML = '';
+
+    const welcomes = {
+        volunteer: {
+            ru: "👋 Привет! Я помогу вам ухаживать за пожилым человеком. Задайте любой вопрос!",
+            tj: "👋 Салом! Ман ба шумо кӯмак мекунам. Ҳар саволе доред — бипурсед!",
+            en: "👋 Hi! I'll help you care for an elderly person. Ask me anything!"
+        },
+        elderly: {
+            ru: "👋 Здравствуйте! Расскажите, что вас беспокоит — подскажу к какому врачу обратиться.",
+            tj: "👋 Салом! Нороҳатии шуморо гӯед — ман мегӯям ба кадом духтур муроҷиат кунед.",
+            en: "👋 Hello! Tell me what's bothering you and I'll help you find the right doctor."
+        }
+    };
+
+    addMsg('assistant', welcomes[role][currentLang] || welcomes[role].ru);
+    renderQuickPrompts();
+}
+
+// ─── QUICK PROMPTS ───
+function renderQuickPrompts() {
+    const container = document.getElementById('quickPrompts');
+    const prompts = quickPrompts[currentRole][currentLang] || quickPrompts[currentRole].ru;
+    container.innerHTML = prompts.map(p =>
+        `<button class="qprompt" onclick="usePrompt(this.textContent)">${p}</button>`
+    ).join('');
+}
+
+function usePrompt(text) {
+    document.getElementById('msgInput').value = text;
+    sendMessage();
+}
+
+// ─── SEND MESSAGE ───
+async function sendMessage() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text || isLoading) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    isLoading = true;
+    document.getElementById('sendBtn').disabled = true;
+
+    addMsg('user', text);
+    messageHistory.push({ role: 'user', content: text });
+
+    const typingEl = addTyping();
+
+    try {
+        const response = await fetch('/ai/chat/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                messages: messageHistory,
+                system_prompt: systemPrompts[currentRole]
+            })
+        });
+
+        const data = await response.json();
+        typingEl.remove();
+
+        const reply = data.reply || '❌ Нет ответа от AI.';
+        messageHistory.push({ role: 'assistant', content: reply });
+        addMsg('assistant', reply);
+
+        if (messageHistory.length > 10) messageHistory = messageHistory.slice(-10);
+
+    } catch (err) {
+        typingEl.remove();
+        addMsg('assistant', '❌ Ошибка соединения с сервером.');
+        console.error(err);
+    }
+
+    isLoading = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('msgInput').focus();
+}
+
+// ─── UI HELPERS ───
+function addMsg(role, text) {
+    const chatBox = document.getElementById('chatBox');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return div;
+}
+
+function addTyping() {
+    const chatBox = document.getElementById('chatBox');
+    const div = document.createElement('div');
+    div.className = 'msg typing';
+    div.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return div;
+}
+
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+// ─── LANG & THEME ───
+function updateLang(lang) {
+    currentLang = lang;
+    const t = translations[lang] || translations.ru;
+    document.querySelectorAll('[data-t]').forEach(el => {
+        const key = el.getAttribute('data-t');
+        if (t[key]) el.textContent = t[key];
+    });
+    document.getElementById('langBtn').innerText = lang.toUpperCase();
+    const inp = document.getElementById('msgInput');
+    if (inp) inp.placeholder = t.placeholder || 'Напишите вопрос...';
+    renderQuickPrompts();
+}
+
+function toggleLang() {
+    const next = currentLang === 'ru' ? 'tj' : currentLang === 'tj' ? 'en' : 'ru';
+    localStorage.setItem('lang', next);
+    updateLang(next);
+}
+
+function toggleTheme() {
+    const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+    document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+    updateLang(currentLang);
+    setRole('volunteer');
+});
+</script>
+</body>
+</html>

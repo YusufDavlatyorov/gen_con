@@ -28,6 +28,10 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(null=True, blank=True, verbose_name="Дедлайн")
 
+    address = models.CharField(max_length=255, verbose_name="Адрес")
+    phone = models.CharField(max_length=20, verbose_name="Телефон")
+
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = "Задача"
@@ -36,3 +40,6 @@ class Task(models.Model):
     def __str__(self):
         v_name = self.volunteer.username if self.volunteer else "ожидает"
         return f"{self.title} (Клиент: {self.client.username}, Волонтер: {v_name})"
+
+
+

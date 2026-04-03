@@ -170,3 +170,39 @@ def accept_task(request, pk):
         
     return redirect('task_list')
 
+
+import requests
+import json
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
+def ai_advisor_view(request):
+    return render(request, 'tasks/ai_advisor.html')
+
+@require_POST
+def ai_chat_view(request):
+    data = json.loads(request.body)
+    messages = data.get('messages', [])
+    system_prompt = data.get('system_prompt', '')
+
+    response = requests.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        headers={
+            'Authorization': f'Bearer {settings.OPENROUTER_API_KEY}',
+            'Content-Type': 'application/json',
+        },
+        json={
+            'model': 'google/gemini-2.0-flash-001',
+            'max_tokens': 700,
+            'messages': [
+                {'role': 'system', 'content': system_prompt},
+                *messages
+            ]
+        }
+    )
+
+    result = response.json()
+    reply = result['choices'][0]['message']['content']
+    return JsonResponse({'reply': reply})
