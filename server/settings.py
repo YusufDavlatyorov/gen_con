@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_@((a*iz^(-(yra70l$fyatq$xpatl6vkh@48kc6e_3=2qfja@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
@@ -81,14 +81,11 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gen_new',    # Your PostgreSQL database name
-        'USER': 'postgres',        # Your PostgreSQL username
-        'PASSWORD': '270909', # Your PostgreSQL password
-        'HOST': 'localhost',     # Set to 'localhost' if running locally
-        'PORT': '5432',          # Default PostgreSQL port
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'Gen_connect.sqlite3',
     }
 }
+
 
 LOGIN_URL = 'login'
 # Password validation
