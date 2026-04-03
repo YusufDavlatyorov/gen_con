@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_@((a*iz^(-(yra70l$fyatq$xpatl6vkh@48kc6e_3=2qfja@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
@@ -163,3 +162,4 @@ LOGIN_REDIRECT_URL = 'profile'
 
 
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+
